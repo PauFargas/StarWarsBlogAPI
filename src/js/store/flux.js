@@ -1,43 +1,141 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
+			
+			favorites : [],
+			characters : [],
+			planets : [],
+			starships: [],
+			currentCharacter: {},
+			currentStarship: {},
+			currentPlanet: {},
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
+			setFavorites: (item) => {
+				const store = getStore(); 
+				setStore({ favorites: [...store.favorites, item] });  
 			},
-			loadSomeData: () => {
-				/**
-					fetch().then().then(data => setStore({ "foo": data.bar }))
-				*/
-			},
-			changeColor: (index, color) => {
-				//get the store
+			removeFavorites : (name) =>{
 				const store = getStore();
+				setStore({favorites : store.favorites.filter((item, id)=> {return item != name} )})
 
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
+			},
 
-				//reset the global store
-				setStore({ demo: demo });
-			}
+
+			getCharacters : async () => {
+				const url = "https://www.swapi.tech/api/" + "people";
+				const options = {method : 'GET'};
+				const response = await fetch(url, options)
+				if(response.ok){
+					const data = await response.json();
+					//console.log(data)					
+					setStore({characters : data.results})
+					
+				}else{
+					console.log('Error retrieving people: ', response.status, response.statusText)
+				}
+			},
+			getPlanets : async () => {
+				const url = "https://www.swapi.tech/api/" + "planets/";
+				const options = {method : 'GET'};
+				const response = await fetch(url, options)
+				if(response.ok){
+					const data = await response.json()
+					//console.log("Planets Retrieved Succesfully");
+					//console.log(data)					
+					setStore({planets : data.results})
+					
+				}else{
+					console.log('Error retrieving planets: ', response.status, response.statusText)
+				}
+			},
+			getStarships : async () => {
+				const url = "https://www.swapi.tech/api/" + "starships/";
+				const options = {method : 'GET'};
+				const response = await fetch(url, options)
+				if(response.ok){
+					const data = await response.json()
+					//console.log("Starships Retrieved Succesfully");
+					//console.log(data)
+					//console.log(data.message)
+					//console.log(data.results)
+					setStore({starships : data.results})
+					
+				}else{
+					console.log('Error retrieving starships: ', response.status, response.statusText)
+				}
+			},
+			getCharacterDetails : async (id)=>{
+				const url = "https://www.swapi.tech/api/" +"people/" + id;
+				console.log(url)
+				const options ={
+					method : 'GET'
+				};
+				const response = await fetch(url, options);
+				
+				if (response.ok){
+					const data = await response.json();
+					console.log("data", data)					
+					console.log ("data.message", data.message)
+					console.log ("data.result: ", data.result);
+					console.log("description: ", data.result.description)
+					console.log("Properties: ", data.result.properties)
+					setStore({currentCharacter : data.result})
+					
+
+				}else{
+					console.log("Error retrieving Details: ", response.status, response.statusText);
+				}
+
+			},
+			getStarshipDetails : async (id) => {
+				const url = "https://www.swapi.tech/api/" +"starships/" + id;
+				console.log(url)
+				const options ={
+					method : 'GET'
+				};
+				const response = await fetch(url, options);
+				
+				if (response.ok){
+					const data = await response.json();
+					console.log("data", data)					
+					console.log ("data.message", data.message)
+					console.log ("data.result: ", data.result);
+					console.log("description: ", data.result.description)
+					console.log("Properties: ", data.result.properties)
+					setStore({currentStarship : data.result})
+					
+
+				}else{
+					console.log("Error retrieving Details: ", response.status, response.statusText);
+				}
+
+			},
+			getPlanetDetails : async (id)=>{
+				const url = "https://www.swapi.tech/api/" +"planets/" + id;
+				console.log(url)
+				const options ={
+					method : 'GET'
+				};
+				const response = await fetch(url, options);
+				
+				if (response.ok){
+					const data = await response.json();
+					console.log("data", data)					
+					console.log ("data.message", data.message)
+					console.log ("data.result: ", data.result);
+					console.log("description: ", data.result.description)
+					console.log("Properties: ", data.result.properties)
+					setStore({currentPlanet : data.result})
+					
+
+				}else{
+					console.log("Error retrieving Planet Details: ", response.status, response.statusText);
+				}
+
+			},
+
 		}
 	};
 };
